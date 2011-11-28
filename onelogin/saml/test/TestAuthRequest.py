@@ -3,9 +3,9 @@ import fudge
 from datetime import datetime
 from nose.tools import eq_ as eq
 
-from onelogin.saml import AuthnRequest
+from onelogin.saml import AuthRequest
 
-class TestAuthnRequest(object):
+class TestAuthRequest(object):
     def setUp(self):
         fudge.clear_expectations()
 
@@ -24,7 +24,7 @@ class TestAuthnRequest(object):
         fake_zlib.remember_order()
         fake_compress = fake_zlib.expects('compress')
         fake_compress.with_args(
-"""<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Version="2.0" IssueInstant="2011-07-09T19:24:52" ID="hex_uuid" AssertionConsumerServiceURL="http://foo.bar/consume"><saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">foo_issuer</saml:Issuer><samlp:NameIDPolicy AllowCreate="true" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"/><samlp:RequestedAuthnContext Comparison="exact"><saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext></samlp:AuthnRequest>"""
+"""<samlp:AuthRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Version="2.0" IssueInstant="2011-07-09T19:24:52" ID="hex_uuid" AssertionConsumerServiceURL="http://foo.bar/consume"><saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">foo_issuer</saml:Issuer><samlp:NameIDPolicy AllowCreate="true" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"/><samlp:RequestedAuthnContext Comparison="exact"><saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext></samlp:AuthRequest>"""
 )
         fake_compress.returns('HDfoo_compressedCHCK')
 
@@ -42,7 +42,7 @@ class TestAuthnRequest(object):
             )
         fake_urlencode.returns('foo_urlencoded')
 
-        req = AuthnRequest.create(
+        req = AuthRequest.create(
             _clock=fake_clock,
             _uuid=fake_uuid_func,
             _zlib=fake_zlib,

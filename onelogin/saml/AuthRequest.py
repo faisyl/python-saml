@@ -105,7 +105,6 @@ def create(
             )
     else:
         encoded_request = _base64.b64encode(etree.tostring(authn_request))
-        encoded_request = _urllib.quote(encoded_request)
         return encoded_request
         
 

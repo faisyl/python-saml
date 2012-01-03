@@ -91,18 +91,20 @@ def create(
                                     )
     request_authn_context.append(authn_context_class_ref)
 
-    compressed_request = _zlib.compress(etree.tostring(authn_request))
-    # Strip the first 2 bytes (header) and the last 4 bytes (checksum) to get the raw deflate
-    deflated_request = compressed_request[2:-4]
-    encoded_request = _base64.b64encode(deflated_request)
-    urlencoded_request = _urllib.urlencode(
-        [('SAMLRequest', encoded_request)],
-        )
     if _as_url:
+        compressed_request = _zlib.compress(etree.tostring(authn_request))
+        # Strip the first 2 bytes (header) and the last 4 bytes (checksum) to get the raw deflate
+        deflated_request = compressed_request[2:-4]
+        encoded_request = _base64.b64encode(deflated_request)
+        urlencoded_request = _urllib.urlencode(
+            [('SAMLRequest', encoded_request)],
+            )
         return '{url}?{query}'.format(
             url=idp_sso_target_url,
             query=urlencoded_request,
             )
     else:
+        encoded_request = _base64.b64encode(etree.tostring(authn_request))
         return encoded_request
+        
 

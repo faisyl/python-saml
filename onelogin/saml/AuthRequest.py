@@ -13,6 +13,7 @@ def create(
     _zlib=None,
     _base64=None,
     _urllib=None,
+    _as_url=True,
     **kwargs
     ):
     """Create a URL string which can be used to redirect a samlp:AuthnRequest to the identity provider.
@@ -97,8 +98,11 @@ def create(
     urlencoded_request = _urllib.urlencode(
         [('SAMLRequest', encoded_request)],
         )
+    if _as_url:
+        return '{url}?{query}'.format(
+            url=idp_sso_target_url,
+            query=urlencoded_request,
+            )
+    else:
+        return encoded_request
 
-    return '{url}?{query}'.format(
-        url=idp_sso_target_url,
-        query=urlencoded_request,
-        )

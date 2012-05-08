@@ -36,6 +36,8 @@ def create(
     if _urllib is None:
         _urllib = urllib
 
+    assertion_consumer_service_url = None
+    assertion_consumer_service_index = "1"
     if 'assertion_consumer_service_url' in kwargs:
         assertion_consumer_service_url = kwargs.pop(
             'assertion_consumer_service_url',

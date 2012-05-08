@@ -36,9 +36,13 @@ def create(
     if _urllib is None:
         _urllib = urllib
 
-    assertion_consumer_service_url = kwargs.pop(
-        'assertion_consumer_service_url',
-        )
+    if 'assertion_consumer_service_url' in kwargs:
+        assertion_consumer_service_url = kwargs.pop(
+            'assertion_consumer_service_url',
+            )
+    elif 'assertion_consumer_service_index' in kwargs:
+        assertion_consumer_service_index = "%s" % kwargs.pop('assertion_consumer_service_index')
+
     issuer = kwargs.pop('issuer')
     name_identifier_format = kwargs.pop('name_identifier_format')
     idp_sso_target_url = kwargs.pop('idp_sso_target_url')
@@ -62,14 +66,23 @@ def create(
         nsmap=dict(saml='urn:oasis:names:tc:SAML:2.0:assertion'),
         )
 
-    authn_request = samlp_maker.AuthnRequest(
-        ProtocolBinding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-        Version='2.0',
-        IssueInstant=now_iso,
-        ID=unique_id,
-        AssertionConsumerServiceURL=assertion_consumer_service_url,
-        )
-
+    if assertion_consumer_service_url:
+        authn_request = samlp_maker.AuthnRequest(
+            ProtocolBinding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+            Version='2.0',
+            IssueInstant=now_iso,
+            ID=unique_id,
+            AssertionConsumerServiceURL=assertion_consumer_service_url,
+            )
+    elif assertion_consumer_service_index:
+        authn_request = samlp_maker.AuthnRequest(
+            ProtocolBinding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+            Version='2.0',
+            IssueInstant=now_iso,
+            ID=unique_id,
+            AssertionConsumerServiceIndex=assertion_consumer_service_index,
+            )
+    
     saml_issuer = saml_maker.Issuer()
     saml_issuer.text = issuer
     authn_request.append(saml_issuer)

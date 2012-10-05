@@ -57,7 +57,7 @@ def create(
     now_iso = now.isoformat()
 
     unique_id = _uuid()
-    unique_id = unique_id.hex
+    unique_id = '_' + unique_id.hex
 
     samlp_maker = ElementMaker(
         namespace='urn:oasis:names:tc:SAML:2.0:protocol',

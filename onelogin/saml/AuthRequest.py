@@ -2,6 +2,7 @@ import zlib
 import base64
 import uuid
 import urllib
+import urlparse
 
 from datetime import datetime
 from lxml import etree
@@ -94,7 +95,7 @@ def create(
         Format=name_identifier_format,
         AllowCreate='true',
         )
-    authn_request.append(name_id_policy)
+    #authn_request.append(name_id_policy)
 
     request_authn_context = samlp_maker.RequestedAuthnContext(
         Comparison='exact',
@@ -109,16 +110,16 @@ def create(
 
     if _as_url:
         compressed_request = _zlib.compress(etree.tostring(authn_request))
+        pu = urlparse.urlparse(idp_sso_target_url)
+        qsl = urlparse.parse_qsl(pu.query)
         # Strip the first 2 bytes (header) and the last 4 bytes (checksum) to get the raw deflate
         deflated_request = compressed_request[2:-4]
         encoded_request = _base64.b64encode(deflated_request)
-        urlencoded_request = _urllib.urlencode(
-            [('SAMLRequest', encoded_request)],
-            )
-        return '{url}?{query}'.format(
-            url=idp_sso_target_url,
-            query=urlencoded_request,
-            )
+        qsl.append(('SAMLRequest', encoded_request))
+        qs = _urllib.urlencode(qsl)
+        pul = list(pu)
+        pul[4] = qs
+        return urlparse.urlunparse(pul)
     else:
         encoded_request = _base64.b64encode(etree.tostring(authn_request))
         return encoded_request
